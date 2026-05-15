@@ -121,6 +121,7 @@ flowchart LR
 ```
 ## ディレクトリ構成
 本リポジトリは「関心の分離」に基づき、フロントエンド（UI/状態管理）とバックエンド（外部サービス中継）を分割しています。
+````text
 Cafe-Wagtail/
 ├── README.md                  # 本ドキュメント
 ├── src/                       
@@ -128,7 +129,7 @@ Cafe-Wagtail/
 └── gas/                       
     ├── line-bridge.gs         # LINE Messaging API 中継用サーバーレス関数
     └── form-to-firestore.gs   # Googleフォーム回答のFirestore格納ロジック
-
+````
 ## 技術スタック
 Frontend: React (Vite / Canvas Environment), Tailwind CSS, Lucide React, Recharts
 Backend / BaaS: Firebase (Firestore, Auth), Google Apps Script (GAS)
