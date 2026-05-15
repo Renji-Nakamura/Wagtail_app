@@ -38,7 +38,7 @@ const App = () => {
   return <div>Wagtail App</div>;
 };
 export default App;
-
+```
 ---
 
 ## System Architecture
