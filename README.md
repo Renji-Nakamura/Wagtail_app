@@ -131,14 +131,16 @@ Cafe-Wagtail/
     └── form-to-firestore.gs   # Googleフォーム回答のFirestore格納ロジック
 ````
 ## 技術スタック
+````text
 Frontend: React (Vite / Canvas Environment), Tailwind CSS, Lucide React, Recharts
 Backend / BaaS: Firebase (Firestore, Auth), Google Apps Script (GAS)
 AI / LLM: Google Gemini API (Prompt Engineering, JSON Parsing)
 External API: LINE Messaging API
-
+````
 ## 今後の展望
+````
 [ ] トランザクション処理の強化: 現在の在庫減少ロジックにおける競合状態 (Race Condition) を防ぐため、Firestore の increment 関数を用いたアトミックな更新処理への移行。
 [ ] セキュリティルールの厳格化: 公開環境での堅牢性を高めるため、Firestore の firestore.rules の実装。
-
+````
 ## License
 This project is licensed under the MIT License.
