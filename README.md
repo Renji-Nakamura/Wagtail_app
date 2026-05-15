@@ -32,12 +32,8 @@ Gemini CanvasネイティブなAI搭載・販売意思決定支援ダッシュ�
 - 単一のAppコンポーネントとして描画すること
 
 【コード】
-```jsx
 // ここに Wagtail_app_v2.jsx のコードをすべて貼り付ける
-const App = () => {
-  return <div>Wagtail App</div>;
-};
-export default App;
+
 ````
 ---
 
