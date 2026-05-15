@@ -18,11 +18,18 @@ Gemini CanvasネイティブなAI搭載・販売意思決定支援ダッシュ�
 2. 本リポジトリの `src/Wagtail_app_v2.jsx` のコードをコピーします。（※コードをペーストする際、一度に1000行分送るとフリーズする可能性があるため、約500行ずつ2回に分割してペーストするとスムーズに送信できます。）
 3. 以下のプロンプトと一緒にGeminiに送信してください。
 
-> **【プロンプト】**
-> 以下のReactコードは、Tailwind CSS、lucide-react、recharts、firebaseを使用しています。このコードを使ってCanvas（プレビュー）でアプリを描画してください。必要なパッケージのインポートや初期化は自動で補完してください。
-> 
-> [ここに Wagtail_app_v2.jsx のコードをペースト]
+【以下プロンプト】
+以下のReactコードをCanvas（プレビュー）で実行して表示してください。
 
+【実行環境の条件】
+・Tailwind CSS を使用
+・アイコンに 'lucide-react' を使用
+・グラフ描画に 'recharts' を使用
+・Firebase ('firebase/app', 'firebase/auth', 'firebase/firestore') を使用
+・単一のAppコンポーネントとして描画すること
+
+【コード】
+（ここに Wagtail_app_v2.jsx のコードをすべて貼り付ける）
 ---
 
 ## System Architecture
