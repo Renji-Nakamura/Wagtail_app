@@ -57,6 +57,7 @@ GASの「設定（歯車マーク）」>「スクリプトプロパティ」に�
 | `FIREBASE_PROJECT_ID` | FirebaseのプロジェクトID |
 
 また、Googleフォーム側の設定で「フォーム送信時」をトリガーとしたイベント駆動設定（`onFormSubmit` 関数の実行設定）を有効にしてください。
+
 ---
 ## System Architecture
 システム全体のデータ循環と、Canvasを中心としたアーキテクチャ設計です。
