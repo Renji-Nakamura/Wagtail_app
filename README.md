@@ -107,7 +107,7 @@ flowchart LR
     Canvas -.- Note
     Note -.- Gemini
 ```
-##ディレクトリ構成
+## ディレクトリ構成
 本リポジトリは「関心の分離」に基づき、フロントエンド（UI/状態管理）とバックエンド（外部サービス中継）を分割しています。
 Cafe-Wagtail/
 ├── README.md                  # 本ドキュメント
@@ -117,15 +117,15 @@ Cafe-Wagtail/
     ├── line-bridge.gs         # LINE Messaging API 中継用サーバーレス関数
     └── form-to-firestore.gs   # Googleフォーム回答のFirestore格納ロジック
 
-##技術スタック
+## 技術スタック
 Frontend: React (Vite / Canvas Environment), Tailwind CSS, Lucide React, Recharts
 Backend / BaaS: Firebase (Firestore, Auth), Google Apps Script (GAS)
 AI / LLM: Google Gemini API (Prompt Engineering, JSON Parsing)
 External API: LINE Messaging API
 
-##今後の展望
+## 今後の展望
 [ ] トランザクション処理の強化: 現在の在庫減少ロジックにおける競合状態 (Race Condition) を防ぐため、Firestore の increment 関数を用いたアトミックな更新処理への移行。
 [ ] セキュリティルールの厳格化: 公開環境での堅牢性を高めるため、Firestore の firestore.rules の実装。
 
-##License
+## License
 This project is licensed under the MIT License.
