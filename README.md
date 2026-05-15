@@ -30,6 +30,7 @@ Gemini CanvasネイティブなAI搭載・販売意思決定支援ダッシュ�
 
 【コード】
 （ここに Wagtail_app_v2.jsx のコードをすべて貼り付ける）
+
 ---
 
 ## System Architecture
