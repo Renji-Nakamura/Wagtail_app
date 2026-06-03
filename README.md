@@ -5,8 +5,11 @@ Gemini CanvasネイティブなAI搭載・販売意思決定支援ダッシュ�
 本プロジェクトは、**Gemini Canvas（Artifacts）環境内で動作することを前提に設計された、AIネイティブなWebアプリケーション**です。
 従来のローカルホストやVPSへのデプロイをあえて捨て、Googleのサービススコープ内で完結させることで、以下のメリットを実現しています。
 
-- **Zero-Deployment (ゼロ・デプロイメント):** サーバー構築や環境構築の手間が一切不要。ソースコードをGeminiに渡すだけで、即座にダッシュボードが起動します。
-- **Secure AI Integration (セキュアなAI統合):** LLMへの特権的アクセスをCanvas内部のコンテキストに依存しているため、ソースコード上にAPIキー等の秘匿情報を記述する必要がなく、漏洩リスクを根本から排除しています。
+- **Cross-Device & Zero-Cost (クロスデバイスと運用コストゼロ):**
+  フロントエンド（UI）をCanvas内に留めることで、アプリストアへの申請やサーバーのホスティング費用を完全にゼロに抑えています。Geminiアプリにログインできる環境さえあれば、PC・スマホ・タブレットのデバイスの壁を越えて、いつでもどこでも同じアプリ環境にアクセス可能です。
+- **Persistent State (揮発性サンドボックスの克服):**
+  Canvas環境特有の「セッション終了時にデータがリセットされる」というサンドボックスの課題を、外部のFirebase（BaaS）にデータをリアルタイムで永続化・同期することで解決しました。これにより、Canvasを「使い捨てのプレビュー画面」ではなく「実運用可能なフロントエンド」として昇華させています。
+- **Secure AI Integration (セキュアなAI統合):** 通常のWebアプリでAIを組み込む場合、フロントエンドやバックエンドにAPIキーを持たせる必要があります。しかし本アプリは、Gemini Canvas環境自体が持つ「親セッションとのコンテキスト共有機能」をハックして利用しています。これにより、ソースコード内のAPIキーを空欄にしたままでも、Canvas環境を介して直接AI処理（データに基づく顧客分析など）を実行できます。秘匿情報を一切記述する必要がないため、APIキー漏洩のリスクが根本から存在しません。
 - **Frontend-Aggregated Optimization (フロントエンド集約型の最適化):** 通常はバックエンドに隠蔽すべきロジックも、Canvasというセキュアなサンドボックス内で動く特性を活かし、あえてフロントエンドに集約して高速なプロトタイピングを実現しています。
 
 ---
@@ -79,7 +82,7 @@ flowchart LR
     classDef greenBox fill:#f0fff0,stroke:#00cc00,stroke-width:2px
     classDef noteStyle fill:#ffffff,stroke:#ff00ff,stroke-width:2px,stroke-dasharray: 5 5,color:#ff00ff
 
-    subgraph Canvas ["Gemini Chat (canvas) / Geminiアプリ内 (Googleサービス内)"]
+    subgraph Canvas ["Gemini Chat (canvas) / 実行環境"]
         subgraph Logic ["アプリロジック (React)"]
             direction TB
             subgraph StateGroup ["状態管理・UIコンポーネント"]
@@ -91,15 +94,13 @@ flowchart LR
 
             subgraph NetworkGroup ["通信レイヤー"]
                 DB_Sync["Firestoreリスナー\n(リアルタイム同期)"]
-                API_AI["Gemini API Fetcher"]
+                API_AI["Gemini API Fetcher\n(Canvasコンテキスト利用)"]
                 API_LINE["LINE GAS Fetcher"]
             end
 
-            %% UIと状態の連携
             UI1 & UI2 & UI3 <--> State
             State <--> DB_Sync
 
-            %% UIからAPI呼び出し (ワンショット)
             UI1 -->|"分析指示"| API_AI
             UI2 -->|"需要予測指示"| API_AI
             UI3 -->|"文面生成指示"| API_AI
@@ -116,36 +117,44 @@ flowchart LR
     end
     class Firebase blueBox
 
-    subgraph Gemini ["Google AI (Gemini API)"]
-        Model["Gemini Model\n(2.5-Flash-preview等)"]
+    subgraph BackendGAS ["バックエンド中継層 (GAS)"]
+        direction TB
+        GAS_LINE["LINE中継GAS\n(line-bridge.gs)"]
+        GAS_Form["フォーム連携GAS\n(form-to-firestore.gs)"]
+    end
+    class BackendGAS blueBox
+
+    subgraph Gemini ["Google AI (Gemini)"]
+        Model["Gemini Model\n(Canvasネイティブ接続)"]
     end
     class Gemini orangeBox
 
-    subgraph CustomerTouch ["顧客タッチポイント (外部連携)"]
+    subgraph CustomerTouch ["外部連携・顧客タッチポイント"]
         direction LR
-        GAS_LINE["GAS\n(LINE Messaging API)"]
         LINEApp["LINEアプリ"]
         User(("顧客"))
         GForm["Googleフォーム\n(アンケート)"]
-        GAS_Form["GAS\n(form-to-firestore.gs)"]
         
-        GAS_LINE -->|"プッシュ配信"| LINEApp
         LINEApp -->|"閲覧・来店"| User
         User -->|"回答入力"| GForm
-        GForm -->|"Webhook"| GAS_Form
     end
     class CustomerTouch greenBox
 
     %% コンポーネント間の結線
     Logic -.->|"匿名ログイン"| Auth
-    DB_Sync <-->|"WebSocket\n(onSnapshot)"| DB
-    GAS_Form -->|"データ格納\n(自動整形)"| DB
+    DB_Sync <-->|"WebSocket (onSnapshot)"| DB
+    
+    %% GAS経由のデータ・API処理
+    API_LINE -->|"HTTP POST (サーバーレス呼出)"| GAS_LINE
+    GAS_LINE -->|"プッシュ配信"| LINEApp
+    GForm -->|"Webhook"| GAS_Form
+    GAS_Form -->|"データ永続化"| DB
 
-    API_AI <-->|"HTTP POST\n(プロンプト ↔ JSON/テキスト)"| Model
-    API_LINE -->|"HTTP POST (no-cors)"| GAS_LINE
+    %% Canvasを介したAI連携
+    API_AI <-->|"セッションコンテキスト通信"| Model
 
     %% 特権アクセスの注釈
-    Note["Geminiチャット内(Canvas)で動作するため、\nAPIキーレスでGeminiに特権的アクセス"]:::noteStyle
+    Note["Canvas内で動作するため、\nソースコードにAPIキーを記述せず\n安全にAI機能と連携"]:::noteStyle
     Canvas -.- Note
     Note -.- Gemini
 ```
